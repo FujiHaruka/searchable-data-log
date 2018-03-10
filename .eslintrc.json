@@ -4,7 +4,8 @@
     "standard-jsx"
   ],
   "rules": {
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "valid-typeof": "off"
   },
   "parser": "babel-eslint"
 }
