@@ -1,23 +1,25 @@
 const assert = require('assert')
 const File = require('../lib/File')
 const fs = require('fs-extra')
+const {join} = require('path')
 
 describe('File', function () {
-  const csvPath = 'tmp/FileTest.csv'
-  const jsonPath = 'tmp/FileTest.json'
+  const csvFile = 'FileTest.csv'
+  const jsonFile = 'FileTest.json'
+  const dir = 'tmp'
 
   before(async () => {
-    await fs.remove(csvPath)
-    await fs.remove(jsonPath)
+    await fs.remove(join(dir, csvFile))
+    await fs.remove(join(dir, jsonFile))
   })
 
   after(async () => {
-    await fs.remove(csvPath)
-    await fs.remove(jsonPath)
+    await fs.remove(join(dir, csvFile))
+    await fs.remove(join(dir, jsonFile))
   })
 
   it('works with csv', async () => {
-    const file = new File(csvPath)
+    const file = new File({dir, filename: csvFile})
 
     const empty = await file.read()
     assert.ok(!empty)
@@ -33,7 +35,7 @@ describe('File', function () {
   })
 
   it('works with json', async () => {
-    const file = new File(jsonPath)
+    const file = new File({dir, filename: jsonFile})
 
     const empty = await file.readJson()
     assert.ok(!empty)
