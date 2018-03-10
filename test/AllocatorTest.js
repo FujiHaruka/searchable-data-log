@@ -17,7 +17,9 @@ describe('Allocator', function () {
   })
 
   after(async () => {
-    // await fs.remove(dir)
+    for (const dir of dirs) {
+      await fs.remove(dir)
+    }
   })
 
   it('works new', async () => {

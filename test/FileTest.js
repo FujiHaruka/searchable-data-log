@@ -1,23 +1,23 @@
 const assert = require('assert')
 const File = require('../lib/File')
+const Csv = require('../lib/csv/Csv')
 const fs = require('fs-extra')
 
 describe('File', function () {
-  const csvPath = 'tmp/FileTest.csv'
-  const jsonPath = 'tmp/FileTest.json'
+  const textPath = 'tmp/FileTest/test.txt'
+  const csvPath = 'tmp/FileTest/test.csv'
+  const jsonPath = 'tmp/FileTest/test.json'
 
   before(async () => {
-    await fs.remove(csvPath)
-    await fs.remove(jsonPath)
+    await fs.remove('tmp/FileTest')
   })
 
   after(async () => {
-    await fs.remove(csvPath)
-    await fs.remove(jsonPath)
+    await fs.remove('tmp/FileTest')
   })
 
-  it('works with csv', async () => {
-    const file = new File(csvPath)
+  it('works with text', async () => {
+    const file = new File(textPath)
 
     const empty = await file.read()
     assert.ok(!empty)
@@ -43,6 +43,29 @@ describe('File', function () {
 
     const json = await file.readJson()
     assert.equal(json.foo, 2)
+  })
+
+  it('works with csv', async () => {
+    const csv = new Csv([{
+      field: 'x',
+      type: 'number',
+    }, {
+      field: 'y',
+      type: 'number',
+    }])
+    const file = new File(csvPath, {csv})
+
+    const empty = await file.readCsv()
+    assert.equal(empty.length, 0)
+
+    await file.appendCsvLine({x: 1, y: 2})
+    await file.appendCsvLine({x: 2, y: 3})
+
+    const data = await file.readCsv()
+    assert.deepEqual(
+      data,
+      [{x: 1, y: 2}, {x: 2, y: 3}]
+    )
   })
 })
 
