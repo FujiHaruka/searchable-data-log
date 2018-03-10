@@ -2,7 +2,7 @@ const assert = require('assert')
 const File = require('../lib/File')
 const fs = require('fs-extra')
 
-describe('BunnyonModel', function () {
+describe('File', function () {
   const csvPath = 'tmp/FileTest.csv'
   const jsonPath = 'tmp/FileTest.json'
 
