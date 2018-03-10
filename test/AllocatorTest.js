@@ -1,6 +1,7 @@
 const assert = require('assert')
 const Allocator = require('../lib/Allocator')
 const fs = require('fs-extra')
+const Csv = require('../lib/csv/Csv')
 const assertThrows = require('assert-throws-async')
 
 describe('Allocator', function () {
@@ -8,6 +9,7 @@ describe('Allocator', function () {
     'tmp/allocationTest0',
     'tmp/allocationTest1',
     'tmp/allocationTest2',
+    'tmp/allocationTest3',
   ]
 
   before(async () => {
@@ -79,6 +81,35 @@ describe('Allocator', function () {
     {
       const desc = await alloc.allocateAppropriately(-5)
       assert.equal(desc.lowerBound, -5)
+    }
+  })
+
+  it('works with files', async () => {
+    const dir = dirs[3]
+    await fs.copy('assets/allocations/3', dir)
+
+    const csv = new Csv([{
+      field: 'x',
+      type: 'number',
+    }])
+
+    const alloc = new Allocator({
+      dir,
+      csv,
+      indexedField: 'x',
+      maxLines: 4,
+    })
+    await alloc.initialize()
+
+    {
+      // Just max lines
+      const desc = await alloc.allocateAppropriately(5)
+      assert.equal(desc.id, 'a')
+    }
+    {
+      // Over max lines, and devide
+      const desc = await alloc.allocateAppropriately(20)
+      assert.notEqual(desc.id, 'b')
     }
   })
 })

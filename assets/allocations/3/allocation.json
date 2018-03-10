@@ -1,0 +1,14 @@
+[
+  {
+    "file": "a.csv",
+    "id": "a",
+    "lines": 4,
+    "lowerBound": 0
+  },
+  {
+    "file": "b.csv",
+    "id": "b",
+    "lines": 5,
+    "lowerBound": 10
+  }
+]
