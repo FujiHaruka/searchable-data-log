@@ -1,0 +1,16 @@
+{
+  "name": "searchable-data-log",
+  "version": "1.0.0",
+  "description": "A data log storage which is fast, simple, searchable",
+  "scripts": {
+    "test": "mocha"
+  },
+  "main": "lib",
+  "author": "FujiHaruka",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "queue": "^4.4.2"
+  }
+}
