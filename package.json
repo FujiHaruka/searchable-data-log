@@ -13,5 +13,8 @@
     "fs-extra": "^5.0.0",
     "queue": "^4.4.2",
     "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "assert-throws-async": "^2.0.1"
   }
 }

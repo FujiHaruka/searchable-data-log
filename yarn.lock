@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+assert-throws-async@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/assert-throws-async/-/assert-throws-async-2.0.1.tgz#b86a182ffbb4e256398bf69fc529b7d124580520"
+
 fs-extra@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-5.0.0.tgz#414d0110cdd06705734d055652c5411260c31abd"
