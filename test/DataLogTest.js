@@ -3,7 +3,7 @@ const fs = require('fs-extra')
 const DataLog = require('../lib')
 
 describe('DataLog', function () {
-  this.timeout(10000)
+  this.timeout(60000)
   const baseDir = 'tmp/DataLogTest'
 
   before(async () => {
@@ -99,6 +99,43 @@ describe('DataLog', function () {
       })
       assert.ok(results.length > 0)
       results.forEach(({z}) => greaterThan < z && z < lessThan)
+    }
+  })
+
+  it('is fast enough', async () => {
+    const dataLog = new DataLog({baseDir, maxLines: 5000})
+    dataLog.load('LatLng', [{
+      field: 'lat',
+      type: 'number',
+      index: true,
+      required: true,
+    }, {
+      field: 'lng',
+      type: 'number',
+      index: true,
+      required: true,
+    }, {
+      field: 'alt',
+      type: 'number',
+      index: true,
+      required: true,
+    }])
+
+    const {LatLng} = dataLog.resources
+
+    for (const count of [100, 200, 500, 1000, 2000]) {
+      const dataList = new Array(count).fill(null).map(() => ({
+        lat: Math.random() * 1000,
+        lng: Math.random() * 1000,
+        alt: Math.random() * 1000,
+      }))
+      const start = new Date()
+      for (const data of dataList) {
+        await LatLng.append(data)
+      }
+      const end = new Date()
+      const time = end - start
+      console.log(`Append ${count} items in ${time} ms. ${time / count} ms / count`)
     }
   })
 })
