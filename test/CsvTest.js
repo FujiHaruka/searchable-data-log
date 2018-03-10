@@ -1,5 +1,5 @@
 const assert = require('assert')
-const Csv = require('../lib/Csv')
+const Csv = require('../lib/csv/Csv')
 
 describe('Csv', () => {
   it('works', () => {

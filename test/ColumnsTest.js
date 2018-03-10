@@ -1,5 +1,5 @@
 const assert = require('assert')
-const Colums = require('../lib/Columns')
+const Colums = require('../lib/csv/Columns')
 
 describe('Columns', () => {
   it('works column', () => {
