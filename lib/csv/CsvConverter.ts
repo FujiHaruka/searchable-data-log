@@ -15,7 +15,7 @@ class CsvConverter {
     return this.schema.fields.map((f) => obj[f]).join(',') + '\n'
   }
 
-  parse (line) {
+  parse (line: string) {
     const splited = line.split(',')
     return this.schema.parse(splited)
   }

@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "A data log storage which is fast, simple, searchable",
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
     "test": "mocha --require espower-typescript/guess test/*.ts"
   },
   "main": "lib",
