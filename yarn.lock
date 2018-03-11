@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
+"@types/fs-extra@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.1.tgz#cd856fbbdd6af2c11f26f8928fd8644c9e9616c9"
+  dependencies:
+    "@types/node" "*"
+
+"@types/lodash@^4.14.104":
+  version "4.14.104"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.104.tgz#53ee2357fa2e6e68379341d92eb2ecea4b11bb80"
+
+"@types/node@*":
+  version "9.4.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.7.tgz#57d81cd98719df2c9de118f2d5f3b1120dcd7275"
+
+"@types/p-queue@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/p-queue/-/p-queue-2.3.1.tgz#2fb251e46e884e31c4bd1bf58f0e188972353ff4"
+
+"@types/uuid@^3.4.3":
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.3.tgz#121ace265f5569ce40f4f6d0ff78a338c732a754"
+  dependencies:
+    "@types/node" "*"
+
 assert-throws-async@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/assert-throws-async/-/assert-throws-async-2.0.1.tgz#b86a182ffbb4e256398bf69fc529b7d124580520"
@@ -28,11 +52,23 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+lodash@^4.17.5:
+  version "4.17.5"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
+
+p-queue@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/p-queue/-/p-queue-2.3.1.tgz#672c54d190d99bb63fff4dbd0db26380a3602f59"
+
 queue@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/queue/-/queue-4.4.2.tgz#5a9733d9a8b8bd1b36e934bc9c55ab89b28e29c7"
   dependencies:
     inherits "~2.0.0"
+
+typescript@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 universalify@^0.1.0:
   version "0.1.1"
