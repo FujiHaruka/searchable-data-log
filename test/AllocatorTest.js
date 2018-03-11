@@ -32,7 +32,7 @@ describe('Allocator', function () {
       await alloc.allocateAppropriately(10)
     })
 
-    await alloc.initialize()
+    await alloc.run()
 
     const desc1 = await alloc.allocateAppropriately(10)
     const desc2 = await alloc.allocateAppropriately(30)
@@ -45,6 +45,8 @@ describe('Allocator', function () {
 
     await alloc.countUpLines(desc1)
     assert.equal(desc1.lines, 1)
+
+    await alloc.stop()
   })
 
   it('works existing 1', async () => {
@@ -52,10 +54,12 @@ describe('Allocator', function () {
     await fs.copy('assets/allocations/1', dir)
 
     const alloc = new Allocator({dir})
-    await alloc.initialize()
+    await alloc.run()
 
     const desc = await alloc.allocateAppropriately(10)
     assert.equal(desc.lowerBound, 5)
+
+    await alloc.stop()
   })
 
   it('works existing 2', async () => {
@@ -64,7 +68,7 @@ describe('Allocator', function () {
 
     // lowerBounds: 0, 10, 20
     const alloc = new Allocator({dir})
-    await alloc.initialize()
+    await alloc.run()
 
     {
       const desc = await alloc.allocateAppropriately(15)
@@ -82,6 +86,8 @@ describe('Allocator', function () {
       const desc = await alloc.allocateAppropriately(-5)
       assert.equal(desc.lowerBound, -5)
     }
+
+    await alloc.stop()
   })
 
   it('works with files', async () => {
@@ -99,7 +105,7 @@ describe('Allocator', function () {
       indexedField: 'x',
       maxLines: 4,
     })
-    await alloc.initialize()
+    await alloc.run()
 
     {
       // Just max lines
@@ -111,6 +117,8 @@ describe('Allocator', function () {
       const desc = await alloc.allocateAppropriately(20)
       assert.notEqual(desc.id, 'b')
     }
+
+    await alloc.stop()
   })
 })
 

@@ -49,6 +49,8 @@ describe('DataLog', function () {
       })
       assert.ok(results.length > 0)
     }
+
+    await dataLog.close()
   })
 
   it('works with multiple columns', async () => {
@@ -100,6 +102,8 @@ describe('DataLog', function () {
       assert.ok(results.length > 0)
       results.forEach(({z}) => greaterThan < z && z < lessThan)
     }
+
+    await dataLog.close()
   })
 
   it('is fast enough', async () => {
@@ -123,7 +127,7 @@ describe('DataLog', function () {
 
     const {LatLng} = dataLog.resources
 
-    for (const count of [100, 200, 500, 1000, 2000]) {
+    for (const count of [100, 200, 500, 1000]) {
       const dataList = new Array(count).fill(null).map(() => ({
         lat: Math.random() * 1000,
         lng: Math.random() * 1000,
@@ -137,6 +141,8 @@ describe('DataLog', function () {
       const time = end - start
       console.log(`Append ${count} items in ${time} ms. ${time / count} ms / count`)
     }
+
+    await dataLog.close()
   })
 })
 
