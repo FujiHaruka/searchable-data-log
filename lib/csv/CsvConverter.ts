@@ -1,5 +1,5 @@
 
-import CsvSchema from './CsvSchema'
+import CsvSchema, { CsvRow } from './CsvSchema'
 import { ColumnDefinition } from './Column'
 
 class CsvConverter {
@@ -10,12 +10,12 @@ class CsvConverter {
     this.schema = new CsvSchema(columns)
   }
 
-  stringify (obj: {}) {
+  stringify (obj: CsvRow): string {
     this.schema.verify(obj)
     return this.schema.fields.map((f) => obj[f]).join(',') + '\n'
   }
 
-  parse (line: string) {
+  parse (line: string): CsvRow {
     const splited = line.split(',')
     return this.schema.parse(splited)
   }
