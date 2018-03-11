@@ -1,12 +1,12 @@
 
 import CsvSchema from './CsvSchema'
-import { ColumnObject } from './Column'
+import { ColumnDefinition } from './Column'
 
 class CsvConverter {
 
   schema: CsvSchema
 
-  constructor (columns: ColumnObject[]) {
+  constructor (columns: ColumnDefinition[]) {
     this.schema = new CsvSchema(columns)
   }
 

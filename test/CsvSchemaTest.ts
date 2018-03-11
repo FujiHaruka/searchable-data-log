@@ -1,9 +1,9 @@
-const assert = require('assert')
-const Colums = require('../lib/csv/Columns')
+import assert from 'power-assert'
+import CsvSchema from '../dist/csv/CsvSchema'
 
 describe('Columns', () => {
   it('works column', () => {
-    const columns = Colums([{
+    const schema = new CsvSchema([{
       field: 'x',
       index: true,
       required: true,
@@ -15,33 +15,33 @@ describe('Columns', () => {
       field: 'flag',
       type: 'boolean'
     }])
-    assert.ok(columns)
+    assert.ok(schema)
 
     assert.throws(() => {
-      Colums([{field: undefined}])
+      new CsvSchema([{field: undefined}])
     })
     assert.throws(() => {
-      Colums([{field: 1}])
+      new CsvSchema([{field: 1}])
     })
     assert.throws(() => {
-      Colums([{field: 'a', type: undefined}])
+      new CsvSchema([{field: 'a', type: undefined}])
     })
     assert.throws(() => {
-      Colums([{field: 'a', type: String}])
+      new CsvSchema([{field: 'a', type: String}])
     })
     assert.throws(() => {
-      Colums([{field: undefined, type: 'string'}])
+      new CsvSchema([{field: undefined, type: 'string'}])
     })
     assert.throws(() => {
-      Colums([{field: 'a', type: 'string', required: 10}])
+      new CsvSchema([{field: 'a', type: 'string', required: 10}])
     })
     assert.throws(() => {
-      Colums([{field: 'a', type: 'string', index: true}])
+      new CsvSchema([{field: 'a', type: 'string', index: true}])
     })
   })
 
   it('works columns', () => {
-    const columns = Colums([{
+    const schema = new CsvSchema([{
       field: 'x',
       index: true,
       required: true,
@@ -54,36 +54,36 @@ describe('Columns', () => {
       type: 'boolean'
     }])
 
-    columns.assert({
+    schema.verify({
       x: 10,
     })
-    columns.assert({
+    schema.verify({
       x: 10,
       message: 'a'
     })
-    columns.assert({
+    schema.verify({
       x: 10,
       flag: false
     })
 
     assert.throws(() => {
-      columns.assert({
+      schema.verify({
         x: '10',
       })
     })
     assert.throws(() => {
-      columns.assert({
+      schema.verify({
         message: '100'
       })
     })
     assert.throws(() => {
-      columns.assert({
+      schema.verify({
         x: 10,
         message: 10
       })
     })
     assert.throws(() => {
-      columns.assert({
+      schema.verify({
         x: 10,
         fooo: 1
       })

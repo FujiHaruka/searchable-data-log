@@ -1,4 +1,6 @@
-export interface ColumnObject {
+import {isNil} from 'lodash'
+
+export interface ColumnDefinition {
   field: string
   type: string
   required?: boolean
@@ -12,14 +14,15 @@ const instanceOf = (value: any, Class: Function) => {
 
 class Column {
 
-  rawColumn: ColumnObject
+  rawColumn: ColumnDefinition
   field: string
   type: string
   required?: boolean
   index?: boolean
 
-  constructor (column: ColumnObject) {
+  constructor (column: ColumnDefinition) {
     this.rawColumn = column
+    this.verifyDefinition()
     const {field, type, required = false, index = false} = column
     Object.assign(this, {
       field, type, required, index
@@ -64,36 +67,51 @@ class Column {
 
   // --- Validations
 
-  private validate () {
+  /**
+   * パースするときに値が正しいことを検証する
+   */
+  verifyValue (value: any) {
+    if (this.required && isNil(value)) {
+      this.throws(`Invalid data. Key ${this.field} is required: ${value}`)
+    }
+    if (!isNil(value) && typeof value !== this.type) {
+      this.throws(`Invalid data. Key ${this.field} must be ${this.type}: ${value}`)
+    }
+  }
+
+  /**
+   * 定義オブジェクトが正しいことを検証する
+   */
+  private verifyDefinition () {
     for (const key of Column.REQUIRED_KEYS) {
-      this.varifyExists(key)
+      this.verifyExists(key)
     }
     for (const {key, is} of Column.KEY_TYPES) {
       if (typeof this.rawColumn[key] !== 'undefined') {
-        this.varifyInstanceOf(key, is)
+        this.verifyInstanceOf(key, is)
       }
     }
-    this.varifyIndexedColumnTypeMustBeNumber()
+    this.verifyIndexedColumnTypeMustBeNumber()
   }
   
   private throws (text: string) {
     const {rawColumn: column} = this
-    throw new Error(`[COLUMN_ERROR] ${text} / column: ${column ? JSON.stringify(column) : ''}`)
+    throw new Error(`[COLUMN_ERROR] ${text} / Column definition: ${column ? JSON.stringify(column) : ''}`)
   }
 
-  private varifyExists (key: string) {
+  private verifyExists (key: string) {
     if (!this.rawColumn[key]) {
       this.throws(`Key "${key}" is required.`)
     }
   }
 
-  private varifyInstanceOf (key: string, Class: Function) {
+  private verifyInstanceOf (key: string, Class: Function) {
     if (!instanceOf(this.rawColumn[key], Class)) {
       this.throws(`Key "${key}" must be ${Class.name}`)
     }
   }
 
-  private varifyIndexedColumnTypeMustBeNumber () {
+  private verifyIndexedColumnTypeMustBeNumber () {
     if (this.rawColumn.index && this.rawColumn.type !== Column.Types.NUMBER) {
       this.throws(`Indexed column type must be number`)
     }
