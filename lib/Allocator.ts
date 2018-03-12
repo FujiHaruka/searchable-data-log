@@ -4,6 +4,7 @@ import CsvFileDescription, { CsvFileDescriptionRaw } from './CsvFileDescription'
 import bind from 'bind-decorator'
 import withRunning, { startRunningGuard, stopRunningGuard, onlyRunning } from './misc/withRunning'
 import CsvFile from './file/CsvFile';
+import withChanged, { andChanged } from './misc/withChanged';
 
 const ALLOC_FILE = 'allocation.json'
 const DEFAULT_MAX_LINES = 1000
@@ -17,11 +18,11 @@ export interface AllocatorSetting {
  * データを適切な csv ファイルに振り分ける人
  */
 @withRunning
+@withChanged
 class Allocator {
 
   dir: string
   maxLines: number
-  running: boolean = false
   hasChanged: boolean = false
 
   private allocFile: JsonFile
@@ -42,8 +43,10 @@ class Allocator {
 
     process.addListener('exit', this.onExit)
     this.savingTimer = setInterval(async () => {
-      // TODO 変更を検知して保存
-      await this.allocFile.save(this.descriptions)
+      if (this.hasChanged) {
+        this.hasChanged = false
+        await this.allocFile.save(this.descriptions)
+      }
     }, 100)
   }
 
@@ -87,6 +90,7 @@ class Allocator {
   }
 
   @onlyRunning
+  @andChanged
   async updateDescription (id: string, props = {}) {
     const index = this.descriptions.findIndex((a) => a.id === id)
     if (index === -1) {
@@ -97,6 +101,7 @@ class Allocator {
   }
 
   @onlyRunning
+  @andChanged
   async insertDescription (description: CsvFileDescription) {
     const descriptions = [...this.descriptions]
     const found = descriptions.find((d) => d.id === description.id)
@@ -110,6 +115,7 @@ class Allocator {
   }
 
   @onlyRunning
+  @andChanged
   async removeDescription (description: CsvFileDescription) {
     const descriptions = [...this.descriptions]
     const removingIndex = descriptions.findIndex((d) => d.id === description.id)

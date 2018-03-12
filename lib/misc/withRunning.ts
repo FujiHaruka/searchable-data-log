@@ -1,6 +1,6 @@
 function withRunning <C extends {new(...args:any[]):{}}>(Class: C) {
   return class WithRunning extends Class {
-    running: boolean
+    running: boolean = false
   }
 }
 
