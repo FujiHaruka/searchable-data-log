@@ -1,17 +1,19 @@
 {
   "name": "searchable-data-log",
   "version": "1.0.0",
-  "description": "A data log storage which is fast, simple, searchable",
+  "description": "A Data log store which is fast to save and search.",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "mocha --require espower-typescript/guess test/*.ts"
+    "build": "npm run clean && tsc",
+    "watch": "npm run clean && tsc -w",
+    "test": "mocha --require espower-typescript/guess test/*.ts",
+    "clean": "rm -rf dist"
   },
   "main": "lib",
   "author": "FujiHaruka",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "bind-decorator": "^1.0.11",
     "fs-extra": "^5.0.0",
     "lodash": "^4.17.5",
     "p-queue": "^2.3.1",

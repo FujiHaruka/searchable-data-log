@@ -1,7 +1,6 @@
-const assert = require('assert')
-const Allocator = require('../lib/Allocator')
-const fs = require('fs-extra')
-const Csv = require('../lib/csv/Csv')
+import assert from 'power-assert'
+import Allocator from '../lib/Allocator'
+import {remove, copy} from 'fs-extra'
 const assertThrows = require('assert-throws-async')
 
 describe('Allocator', function () {
@@ -14,13 +13,13 @@ describe('Allocator', function () {
 
   before(async () => {
     for (const dir of dirs) {
-      await fs.remove(dir)
+      await remove(dir)
     }
   })
 
   after(async () => {
     for (const dir of dirs) {
-      await fs.remove(dir)
+      await remove(dir)
     }
   })
 
@@ -43,7 +42,9 @@ describe('Allocator', function () {
     assert.equal(desc1.id, desc4.id)
     assert.equal(desc1.lowerBound, 5)
 
-    await alloc.countUpLines(desc1)
+    await alloc.updateDescription(desc1.id, {
+      lines: desc1.lines + 1
+    })
     assert.equal(desc1.lines, 1)
 
     await alloc.stop()
@@ -51,7 +52,7 @@ describe('Allocator', function () {
 
   it('works existing 1', async () => {
     const dir = dirs[1]
-    await fs.copy('assets/allocations/1', dir)
+    await copy('assets/allocations/1', dir)
 
     const alloc = new Allocator({dir})
     await alloc.run()
@@ -64,7 +65,7 @@ describe('Allocator', function () {
 
   it('works existing 2', async () => {
     const dir = dirs[2]
-    await fs.copy('assets/allocations/2', dir)
+    await copy('assets/allocations/2', dir)
 
     // lowerBounds: 0, 10, 20
     const alloc = new Allocator({dir})
@@ -85,37 +86,6 @@ describe('Allocator', function () {
     {
       const desc = await alloc.allocateAppropriately(-5)
       assert.equal(desc.lowerBound, -5)
-    }
-
-    await alloc.stop()
-  })
-
-  it('works with files', async () => {
-    const dir = dirs[3]
-    await fs.copy('assets/allocations/3', dir)
-
-    const csv = new Csv([{
-      field: 'x',
-      type: 'number',
-    }])
-
-    const alloc = new Allocator({
-      dir,
-      csv,
-      indexedField: 'x',
-      maxLines: 4,
-    })
-    await alloc.run()
-
-    {
-      // Just max lines
-      const desc = await alloc.allocateAppropriately(5)
-      assert.equal(desc.id, 'a')
-    }
-    {
-      // Over max lines, and devide
-      const desc = await alloc.allocateAppropriately(20)
-      assert.notEqual(desc.id, 'b')
     }
 
     await alloc.stop()
