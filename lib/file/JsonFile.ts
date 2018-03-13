@@ -6,7 +6,7 @@ import {
   readFile,
   remove,
 } from 'fs-extra'
-import withBlocking, {block} from '../misc/withBlocking'
+import withBlocking, { block } from '../misc/withBlocking'
 
 @withBlocking
 class JsonFile {
@@ -16,7 +16,7 @@ class JsonFile {
 
   constructor (path: string, options: {[key: string]: any} = {}) {
     this.path = path
-    const {pretty = true} = options
+    const { pretty = true } = options
     this.pretty = pretty
   }
 

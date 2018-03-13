@@ -1,5 +1,5 @@
 import Column, { ColumnDefinition, ColumnFieldValue } from './Column'
-import {zip, isNil} from 'lodash'
+import { zip } from 'lodash'
 
 export type CsvRow = {[field: string]: ColumnFieldValue}
 
@@ -30,7 +30,7 @@ class CsvSchema {
    */
   parse (row: (string | null)[]): CsvRow {
     return zip(this.columns, row)
-      .map(([column, item]) => ({[column.field]: column.parse(item)}))
+      .map(([column, item]) => ({ [column.field]: column.parse(item) }))
       .reduce((a, b) => Object.assign(a, b), {})
   }
 
@@ -40,7 +40,7 @@ class CsvSchema {
    */
   verify (obj: {}) {
     for (const column of this.columns) {
-      const {field} = column
+      const { field } = column
       column.verifyValue(obj[field])
     }
     for (const key of Object.keys(obj)) {

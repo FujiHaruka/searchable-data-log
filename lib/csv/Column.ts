@@ -1,4 +1,4 @@
-import {isNil} from 'lodash'
+import { isNil } from 'lodash'
 
 export interface ColumnDefinition {
   field: string
@@ -14,6 +14,27 @@ const instanceOf = (value: any, Class: Function) => {
 
 class Column {
 
+  static Types = {
+    STRING: 'string',
+    NUMBER: 'number',
+    BOOLEAN: 'boolean',
+  }
+
+  private static REQUIRED_KEYS = ['field', 'type']
+  private static KEY_TYPES = [{
+    key: 'field',
+    is: String,
+  }, {
+    key: 'type',
+    is: String,
+  }, {
+    key: 'required',
+    is: Boolean,
+  }, {
+    key: 'index',
+    is: Boolean,
+  }]
+
   rawColumn: ColumnDefinition
   field: string
   type: string
@@ -23,14 +44,14 @@ class Column {
   constructor (column: ColumnDefinition) {
     this.rawColumn = column
     this.verifyDefinition()
-    const {field, type, required = false, index = false} = column
+    const { field, type, required = false, index = false } = column
     Object.assign(this, {
-      field, type, required, index
+      field, type, required, index,
     })
   }
 
   parse (text: string | null): ColumnFieldValue {
-    if (text === null || text === undefined) {
+    if (text === null) {
       return null
     }
     switch (this.type) {
@@ -42,28 +63,8 @@ class Column {
       case Column.Types.BOOLEAN:
         return text === 'true' || false
     }
+    return null
   }
-
-  static Types = {
-    STRING: 'string',
-    NUMBER: 'number',
-    BOOLEAN: 'boolean'
-  }
-
-  private static REQUIRED_KEYS = ['field', 'type']
-  private static KEY_TYPES = [{
-    key: 'field',
-    is: String
-  }, {
-    key: 'type',
-    is: String
-  }, {
-    key: 'required',
-    is: Boolean
-  }, {
-    key: 'index',
-    is: Boolean
-  }]  
 
   // --- Validations
 
@@ -86,16 +87,16 @@ class Column {
     for (const key of Column.REQUIRED_KEYS) {
       this.verifyExists(key)
     }
-    for (const {key, is} of Column.KEY_TYPES) {
+    for (const { key, is } of Column.KEY_TYPES) {
       if (typeof this.rawColumn[key] !== 'undefined') {
         this.verifyInstanceOf(key, is)
       }
     }
     this.verifyIndexedColumnTypeMustBeNumber()
   }
-  
+
   private throws (text: string) {
-    const {rawColumn: column} = this
+    const { rawColumn: column } = this
     throw new Error(`[COLUMN_ERROR] ${text} / Column definition: ${column ? JSON.stringify(column) : ''}`)
   }
 

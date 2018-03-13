@@ -5,7 +5,7 @@ import {
   remove,
 } from 'fs-extra'
 import CsvConverter from '../csv/CsvConverter'
-import withBlocking, {block} from '../misc/withBlocking'
+import withBlocking, { block } from '../misc/withBlocking'
 import { ColumnDefinition } from '../csv/Column'
 import { CsvRow } from '../csv/CsvSchema'
 
@@ -30,7 +30,7 @@ class CsvFile {
   @block
   async appendLines (rows: CsvRow[]) {
     const text = rows.map(
-      (row) => this.converter.stringify(row)
+      (row) => this.converter.stringify(row),
     ).join('')
     await this.append(text)
   }
@@ -54,7 +54,7 @@ class CsvFile {
   }
 
   private async append (text: string) {
-    await outputFile(this.path, text, {flag: 'a'})
+    await outputFile(this.path, text, { flag: 'a' })
   }
 }
 

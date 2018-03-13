@@ -6,7 +6,7 @@ declare function Queue (options: Queue.Options): Queue.Queue
 
 declare namespace Queue {
     interface Options {
-        [key: string]: any;
+      [key: string]: any
     }
 
     class Queue {
