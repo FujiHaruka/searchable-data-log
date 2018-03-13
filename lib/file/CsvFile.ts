@@ -28,12 +28,6 @@ class CsvFile {
   }
 
   @block
-  async appendLine (row: CsvRow) {
-    const line = this.converter.stringify(row)
-    await this.append(line)
-  }
-
-  @block
   async appendLines (rows: CsvRow[]) {
     const text = rows.map(
       (row) => this.converter.stringify(row)

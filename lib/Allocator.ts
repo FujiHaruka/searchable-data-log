@@ -24,9 +24,10 @@ class Allocator {
   dir: string
   maxLines: number
   hasChanged: boolean = false
+  running: boolean = false
+  descriptions: CsvFileDescription[]
 
   private allocFile: JsonFile
-  private descriptions: CsvFileDescription[]
   private savingTimer: NodeJS.Timer | null
 
   constructor ({dir, maxLines = DEFAULT_MAX_LINES}: AllocatorSetting) {
@@ -58,7 +59,7 @@ class Allocator {
   }
 
   @onlyRunning
-  async allocateAppropriately (comparingValue: number) {
+  async requestAppropriateDescription (comparingValue: number) {
     let description
     const index = this.findMaxIndexLowerBoundLessThan(comparingValue)
     if (index > -1) {
@@ -79,7 +80,7 @@ class Allocator {
       }
     }
 
-    return description
+    return {...description}
   }
 
   // --- descriptions の操作
