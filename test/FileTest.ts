@@ -32,6 +32,7 @@ describe('File', function () {
     const definition = [{
       field: 'x',
       type: 'number',
+      index: true,
     }, {
       field: 'y',
       type: 'number',

@@ -8,8 +8,10 @@ class CsvSchema {
   rawColumns: ColumnDefinition[]
   columns: Column[]
   fields: string[]
+  indexedFields: string[]
   private fieldsSet: Set<string>
 
+  // TODO 少なくとも1つ index が必要であることを確認する
   constructor (columns: ColumnDefinition[]) {
     this.rawColumns = columns
     if (!Array.isArray(columns)) {
@@ -18,6 +20,10 @@ class CsvSchema {
     this.fields = columns.map((c) => c.field)
     this.columns = columns.map((c) => new Column(c))
     this.fieldsSet = new Set(this.fields)
+    this.indexedFields = columns.filter((c) => c.index).map((c) => c.field)
+    if (this.indexedFields.length === 0) {
+      throw new Error(`At least one field must be "index" = true`)
+    }
   }
 
   get header () {

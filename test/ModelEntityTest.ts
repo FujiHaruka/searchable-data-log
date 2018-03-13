@@ -18,7 +18,7 @@ describe('ModelEntity', function () {
   it('works with single colum', async () => {
     const model = new ModelEntity({
       dataDir: dataDir + '/1',
-      csvDifinition: [{
+      csvDefinition: [{
         field: 'x',
         type: 'number',
         index: true,
@@ -57,7 +57,7 @@ describe('ModelEntity', function () {
   it('works correct search', async () => {
     const model = new ModelEntity({
       dataDir: dataDir + '/2',
-      csvDifinition: [{
+      csvDefinition: [{
         field: 'x',
         type: 'number',
         index: true,
@@ -90,7 +90,7 @@ describe('ModelEntity', function () {
   it('works with multiple columns', async () => {
     const model = new ModelEntity({
       dataDir: dataDir + '/3',
-      csvDifinition: [{
+      csvDefinition: [{
         field: 'x',
         type: 'number',
         index: true,

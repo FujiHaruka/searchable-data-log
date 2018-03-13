@@ -1,51 +1,51 @@
-const assert = require('assert')
-const fs = require('fs-extra')
-const DataLog = require('../lib')
+import assert from 'power-assert'
+import { remove } from 'fs-extra'
+import DataLog from '../lib/DataLog'
 
 describe('DataLog', function () {
   this.timeout(60000)
-  const baseDir = 'tmp/DataLogTest'
+  const dataDir = 'tmp/DataLogTest'
 
   before(async () => {
-    await fs.remove(baseDir)
+    await remove(dataDir)
   })
 
   after(async () => {
-    // await fs.remove(baseDir)
+    // await remove(dataDir)
   })
 
   it('works with single colum', async () => {
-    const dataLog = new DataLog({baseDir, maxLines: 100})
+    const dataLog = new DataLog({ dataDir, maxLines: 100 })
     dataLog.load('Position', [{
       field: 'x',
       type: 'number',
       index: true,
     }])
-    const {Position} = dataLog.resources
+    const { Position } = dataLog.resources
 
     {
-      const dataList = new Array(100).fill(null).map(() => ({x: Math.random() * 1000}))
+      const dataList = new Array(100).fill(null).map(() => ({ x: Math.random() * 1000 }))
       for (const data of dataList) {
         await Position.append(data)
       }
       const results = await Position.search({
         x: {
-          $gt: -Infinity,
-          $lt: Infinity,
-        }
+          greaterThan: -Infinity,
+          lessThan: Infinity,
+        },
       })
       assert.equal(results.length, 100)
     }
     {
-      const dataList = new Array(1000).fill(null).map(() => ({x: Math.random() * 1000}))
+      const dataList = new Array(1000).fill(null).map(() => ({ x: Math.random() * 1000 }))
       for (const data of dataList) {
         await Position.append(data)
       }
       const results = await Position.search({
         x: {
-          $gt: 100,
-          $lt: 200,
-        }
+          greaterThan: 100,
+          lessThan: 200,
+        },
       })
       assert.ok(results.length > 0)
     }
@@ -54,7 +54,7 @@ describe('DataLog', function () {
   })
 
   it('works with multiple columns', async () => {
-    const dataLog = new DataLog({baseDir, maxLines: 50})
+    const dataLog = new DataLog({ dataDir, maxLines: 50 })
     dataLog.load('Coordinate', [{
       field: 'x',
       type: 'number',
@@ -71,7 +71,7 @@ describe('DataLog', function () {
       index: true,
       required: true,
     }])
-    const {Coordinate} = dataLog.resources
+    const { Coordinate } = dataLog.resources
 
     {
       const dataList = new Array(200).fill(null).map(() => ({
@@ -84,9 +84,9 @@ describe('DataLog', function () {
       }
       const results = await Coordinate.search({
         y: {
-          $gt: -Infinity,
-          $lt: Infinity,
-        }
+          greaterThan: -Infinity,
+          lessThan: Infinity,
+        },
       })
       assert.equal(results.length, 200)
     }
@@ -95,19 +95,19 @@ describe('DataLog', function () {
       const lessThan = 50
       const results = await Coordinate.search({
         z: {
-          $gt: greaterThan,
-          $lt: lessThan,
-        }
+          greaterThan,
+          lessThan,
+        },
       })
       assert.ok(results.length > 0)
-      results.forEach(({z}) => greaterThan < z && z < lessThan)
+      results.forEach(({ z }) => greaterThan < z && z < lessThan)
     }
 
     await dataLog.close()
   })
 
   it('is fast enough', async () => {
-    const dataLog = new DataLog({baseDir, maxLines: 5000})
+    const dataLog = new DataLog({ dataDir, maxLines: 5000 })
     dataLog.load('LatLng', [{
       field: 'lat',
       type: 'number',
@@ -125,7 +125,7 @@ describe('DataLog', function () {
       required: true,
     }])
 
-    const {LatLng} = dataLog.resources
+    const { LatLng } = dataLog.resources
 
     for (const count of [100, 200, 500, 1000]) {
       const dataList = new Array(count).fill(null).map(() => ({
@@ -133,11 +133,11 @@ describe('DataLog', function () {
         lng: Math.random() * 1000,
         alt: Math.random() * 1000,
       }))
-      const start = new Date()
+      const start = Date.now()
       for (const data of dataList) {
         await LatLng.append(data)
       }
-      const end = new Date()
+      const end = Date.now()
       const time = end - start
       console.log(`Append ${count} items in ${time} ms. ${time / count} ms / count`)
     }

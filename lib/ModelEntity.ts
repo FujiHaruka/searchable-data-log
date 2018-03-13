@@ -13,9 +13,9 @@ const INDEXED_FIELD_NAME = '$$indexed'
 
 export interface ModelEntityArg {
   dataDir: string
-  csvDifinition: ColumnDefinition[]
+  csvDefinition: ColumnDefinition[]
   indexedField: string
-  maxLines?: number
+  maxLines: number
 }
 
 export interface ModelEntitySearchArg {
@@ -29,7 +29,7 @@ export interface ModelEntitySearchArg {
 class ModelEntity {
 
   dataDir: string
-  csvDifinition: ColumnDefinition[]
+  csvDefinition: ColumnDefinition[]
   indexedField: string
   maxLines: number
   runnining: boolean
@@ -43,7 +43,7 @@ class ModelEntity {
   constructor (settings: ModelEntityArg) {
     const {
       dataDir,
-      csvDifinition,
+      csvDefinition,
       indexedField, // TODO multiple fields
       maxLines,
     } = settings
@@ -52,7 +52,7 @@ class ModelEntity {
       field: INDEXED_FIELD_NAME,
       type: Column.Types.NUMBER,
     }
-    this.customedCsvDefinition = this.csvDifinition.concat(this.indexedFieldColumn)
+    this.customedCsvDefinition = this.csvDefinition.concat(this.indexedFieldColumn)
     this.csvConverter = new CsvConverter(this.customedCsvDefinition)
     this.allocator = new Allocator({ dir: dataDir, maxLines })
     this.csvFiles = new Map()
