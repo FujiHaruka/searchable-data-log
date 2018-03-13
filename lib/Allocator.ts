@@ -1,6 +1,6 @@
 import { join } from 'path'
 import JsonFile from './file/JsonFile'
-import CsvFileDescription, { CsvFileDescriptionRaw } from './CsvFileDescription'
+import CsvFileDescription, { CsvFileDescriptionRaw } from './csv/CsvFileDescription'
 import bind from 'bind-decorator'
 import withRunning, { startRunningGuard, stopRunningGuard, onlyRunning } from './misc/withRunning'
 import withChanged, { andChanged } from './misc/withChanged'

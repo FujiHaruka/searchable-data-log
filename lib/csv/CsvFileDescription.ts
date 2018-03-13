@@ -1,4 +1,4 @@
-import uid from './misc/uid'
+import uid from '../misc/uid'
 
 /**
  * CsvFileDescription constructor arg
