@@ -1,5 +1,5 @@
-const assert = require('assert')
-const Csv = require('../lib/csv/Csv')
+import assert from 'power-assert'
+import CsvConverter from '../lib/csv/CsvConverter'
 
 describe('Csv', () => {
   it('works', () => {
@@ -25,7 +25,7 @@ describe('Csv', () => {
       field: 'flag',
       type: 'boolean',
     }]
-    const csv = new Csv(columns)
+    const csv = new CsvConverter(columns)
 
     assert.deepEqual(
       csv.parse('1,2,3,,\n'),
