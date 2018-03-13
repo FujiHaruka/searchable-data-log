@@ -30,7 +30,7 @@ class CsvSchema {
    */
   parse (row: (string | null)[]): CsvRow {
     return zip(this.columns, row)
-      .map(([column, item]) => ({ [column.field]: column.parse(item) }))
+      .map(([column, item]: [Column, (string | null)]) => ({ [column.field]: column.parse(item) }))
       .reduce((a, b) => Object.assign(a, b), {})
   }
 

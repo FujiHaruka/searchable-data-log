@@ -1,7 +1,7 @@
 import assert from 'power-assert'
 import JsonFile from '../lib/file/JsonFile'
 import CsvFile from '../lib/file/CsvFile'
-import {remove} from 'fs-extra'
+import { remove } from 'fs-extra'
 
 describe('File', function () {
   const csvPath = 'tmp/FileTest/test.csv'
@@ -21,8 +21,8 @@ describe('File', function () {
     const empty = await file.read()
     assert.ok(!empty)
 
-    await file.save({foo: 1})
-    await file.save({foo: 2})
+    await file.save({ foo: 1 })
+    await file.save({ foo: 2 })
 
     const json = await file.read()
     assert.equal(json.foo, 2)
@@ -36,18 +36,18 @@ describe('File', function () {
       field: 'y',
       type: 'number',
     }]
-    const file = new CsvFile(csvPath, {definition})
+    const file = new CsvFile(csvPath, { definition })
 
     const empty = await file.read()
     assert.equal(empty.length, 0)
 
-    await file.appendLine({x: 1, y: 2})
-    await file.appendLine({x: 2, y: 3})
+    await file.appendLines([{ x: 1, y: 2 }])
+    await file.appendLines([{ x: 2, y: 3 }])
 
     const data = await file.read()
     assert.deepEqual(
       data,
-      [{x: 1, y: 2}, {x: 2, y: 3}]
+      [{ x: 1, y: 2 }, { x: 2, y: 3 }],
     )
   })
 })

@@ -6,7 +6,6 @@ import withRunning, { startRunningGuard, stopRunningGuard, onlyRunning } from '.
 import withChanged, { andChanged } from './misc/withChanged'
 
 const ALLOC_FILE = 'allocation.json'
-const DEFAULT_MAX_LINES = 1000
 
 export interface AllocatorSetting {
   dir: string
@@ -21,7 +20,6 @@ export interface AllocatorSetting {
 class Allocator {
 
   dir: string
-  maxLines: number
   hasChanged: boolean = false
   running: boolean = false
   descriptions: CsvFileDescription[]
@@ -29,9 +27,8 @@ class Allocator {
   private allocFile: JsonFile
   private savingTimer: NodeJS.Timer | null
 
-  constructor ({ dir, maxLines = DEFAULT_MAX_LINES }: AllocatorSetting) {
+  constructor ({ dir }: AllocatorSetting) {
     this.dir = dir
-    this.maxLines = maxLines
     this.allocFile = new JsonFile(join(dir, ALLOC_FILE))
   }
 
@@ -58,7 +55,7 @@ class Allocator {
   }
 
   @onlyRunning
-  async requestAppropriateDescription (comparingValue: number) {
+  async requestAppropriateDescription (comparingValue: number): Promise<CsvFileDescription> {
     let description
     const index = this.findMaxIndexLowerBoundLessThan(comparingValue)
     if (index > -1) {
@@ -79,7 +76,7 @@ class Allocator {
       }
     }
 
-    return { ...description }
+    return CsvFileDescription.fromJSON(description)
   }
 
   // --- descriptions の操作

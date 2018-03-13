@@ -29,7 +29,7 @@
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
     "lint": "fixpack && tslint --format stylish --fix --project tsconfig.json",
-    "test": "mocha --require espower-typescript/guess test/*.ts",
+    "test": "mocha --require espower-typescript/guess",
     "watch": "npm run clean && tsc -w"
   }
 }

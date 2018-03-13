@@ -5,8 +5,11 @@ import { CsvRow } from './csv/CsvSchema'
 import CsvFile from './file/CsvFile'
 import CsvFileDescription from './CsvFileDescription'
 import withBlocking, { block } from './misc/withBlocking'
+import withRunning, { startRunningGuard, stopRunningGuard, onlyRunning } from './misc/withRunning'
+import { bind } from 'bind-decorator'
+import { join } from 'path'
 
-const INDEXED_FIELD_NAME = '$indexedField'
+const INDEXED_FIELD_NAME = '$$indexed'
 
 export interface ModelEntityArg {
   dataDir: string
@@ -15,15 +18,22 @@ export interface ModelEntityArg {
   maxLines?: number
 }
 
+export interface ModelEntitySearchArg {
+  greaterThan: number
+  lessThan: number
+  skip?: number
+}
+
+@withRunning
 @withBlocking
 class ModelEntity {
 
   dataDir: string
   csvDifinition: ColumnDefinition[]
   indexedField: string
-  maxLines?: number
+  maxLines: number
+  runnining: boolean
 
-  // appended indexedField
   indexedFieldColumn: ColumnDefinition
   customedCsvDefinition: ColumnDefinition[]
   csvConverter: CsvConverter
@@ -48,39 +58,76 @@ class ModelEntity {
     this.csvFiles = new Map()
   }
 
-  async connect () {
+  @startRunningGuard
+  async run () {
     await this.allocator.run()
     const { descriptions } = this.allocator
     for (const description of descriptions) {
       const { id, file } = description
-      this.csvFiles.set(id, new CsvFile(file, { definition: this.customedCsvDefinition }))
+      this.csvFiles.set(id, this.createCsvFile(file))
     }
   }
 
-  async disconnect () {
+  @stopRunningGuard
+  async stop () {
     await this.allocator.stop()
     this.csvFiles = new Map()
   }
 
   @block
+  @onlyRunning
   async append (data: CsvRow) {
     data[INDEXED_FIELD_NAME] = data[this.indexedField]
     const comparingValue = data[this.indexedField] as number
     const description = await this.allocator.requestAppropriateDescription(comparingValue)
     const { id, file } = description
-    this.csvFiles[id] = this.csvFiles[id] || this.createCsvFile(file)
-    const csvFile = this.csvFiles[id]
+    if (!this.csvFiles.get(id)) {
+      this.csvFiles.set(id, this.createCsvFile(file))
+    }
+    const csvFile = this.csvFiles.get(id) as CsvFile
     await csvFile.appendLines([data])
     const lines = description.lines + 1
-    await this.allocator.updateDescription(id, { lines: lines + 1 })
+    await this.allocator.updateDescription(id, { lines })
 
     if (lines > this.maxLines) {
       // ファイル分割
+      const { created, deleted } = await this.devideCsvFile(description)
+      for (const description of created) {
+        await this.allocator.insertDescription(description)
+      }
+      for (const description of deleted) {
+        await this.allocator.removeDescription(description)
+      }
     }
   }
 
-  async search () {
-
+  @onlyRunning
+  async search ({ greaterThan, lessThan, skip = 1 }: ModelEntitySearchArg): Promise<CsvRow[]> {
+    const upperLimit = { lowerBound: Infinity }
+    const descriptions = this.allocator.descriptions.filter(
+      (desc, i, descs) => greaterThan < (descs[i + 1] || upperLimit).lowerBound && desc.lowerBound < lessThan,
+    )
+    if (descriptions.length === 0) {
+      return []
+    }
+    let dataList: CsvRow[] = []
+    for (const description of descriptions) {
+      const csvFile = this.csvFiles.get(description.id)
+      if (!csvFile) {
+        continue
+      }
+      const list = await csvFile.read()
+      list.sort(this.compareByIndexedField)
+      dataList = dataList.concat(list)
+      // ソート済みのリストを再保存しておく
+      await csvFile.deleteSelf()
+      await csvFile.appendLines(list)
+    }
+    const filtered = dataList.filter(
+      (data, i) => greaterThan < (data[INDEXED_FIELD_NAME] as number) && (data[INDEXED_FIELD_NAME] as number) < lessThan && i % skip === 0,
+    )
+    filtered.sort(this.compareByIndexedField)
+    return filtered
   }
 
   private async devideCsvFile (description: CsvFileDescription) {
@@ -90,7 +137,7 @@ class ModelEntity {
       throw new Error(`Not found csv file of id = "${id}"`)
     }
     const dataList = await csvFile.read()
-    dataList.sort((d1, d2) => (d1[INDEXED_FIELD_NAME] as number) - (d2[INDEXED_FIELD_NAME] as number))
+    dataList.sort(this.compareByIndexedField)
     const middleIndex = Math.floor(dataList.length / 2)
     const firstHalf = dataList.slice(0, middleIndex)
     const lastHalf = dataList.slice(middleIndex)
@@ -105,15 +152,25 @@ class ModelEntity {
     this.csvFiles.set(lastDesc.id, this.createCsvFile(lastDesc.file))
 
     await Promise.all([
-      this.csvFiles[firstDesc.id].appendLines(firstHalf),
-      this.csvFiles[lastDesc.id].appendLines(lastHalf),
+      (this.csvFiles.get(firstDesc.id) as CsvFile).appendLines(firstHalf),
+      (this.csvFiles.get(lastDesc.id) as CsvFile).appendLines(lastHalf),
     ])
     await csvFile.deleteSelf()
     this.csvFiles.delete(id)
+    return {
+      created: [firstDesc, lastDesc],
+      deleted: [description],
+    }
+  }
+
+  @bind
+  private compareByIndexedField (d1: CsvRow, d2: CsvRow) {
+    return (d1[INDEXED_FIELD_NAME] as number) - (d2[INDEXED_FIELD_NAME] as number)
   }
 
   private createCsvFile (file: string) {
-    return new CsvFile(file, { definition: this.customedCsvDefinition })
+    const path = join(this.dataDir, file)
+    return new CsvFile(path, { definition: this.customedCsvDefinition })
   }
 }
 

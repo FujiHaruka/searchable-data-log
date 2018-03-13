@@ -32,7 +32,7 @@ class JsonFile {
 
   @block
   async save (obj: {}) {
-    const text = JSON.stringify(obj, null, this.pretty && '  ')
+    const text = JSON.stringify(obj, null, this.pretty ? '  ' : undefined)
     const { path } = this
     const exists = await pathExists(path)
     const backupPath = path + '.bk'
