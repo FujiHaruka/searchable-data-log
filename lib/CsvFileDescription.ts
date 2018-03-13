@@ -1,7 +1,4 @@
-import {join} from 'path'
-import CsvFile from './file/CsvFile'
 import uid from './misc/uid'
-import CsvConverter from './csv/CsvConverter';
 
 /**
  * CsvFileDescription constructor arg
@@ -17,6 +14,7 @@ export interface CsvFileDescriptionRaw {
  * CSV file description managed by allocator
  */
 class CsvFileDescription {
+
   id: string
   file: string
   lowerBound: number
@@ -29,11 +27,15 @@ class CsvFileDescription {
       lines = 0,
     } = setting
     const {
-      file = id + '.csv'
+      file = id + '.csv',
     } = setting
     Object.assign(this, {
-      id, file, lowerBound, lines
+      id, file, lowerBound, lines,
     })
+  }
+
+  static fromJSON (setting: CsvFileDescriptionRaw) {
+    return new CsvFileDescription(setting)
   }
 
   toJSON () {
@@ -47,10 +49,6 @@ class CsvFileDescription {
 
   update (props: {} = {}) {
     Object.assign(this, props)
-  }
-
-  static fromJSON (setting: CsvFileDescriptionRaw) {
-    return new CsvFileDescription(setting)
   }
 }
 

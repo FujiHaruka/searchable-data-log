@@ -28,7 +28,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "lint": "fixpack && tslint --format stylish --fix --project tsconfig.json lib/**/*.ts",
+    "lint": "fixpack && tslint --format stylish --fix --project tsconfig.json",
     "test": "mocha --require espower-typescript/guess test/*.ts",
     "watch": "npm run clean && tsc -w"
   }

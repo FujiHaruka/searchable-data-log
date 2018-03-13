@@ -1,10 +1,9 @@
-import {join} from 'path'
+import { join } from 'path'
 import JsonFile from './file/JsonFile'
 import CsvFileDescription, { CsvFileDescriptionRaw } from './CsvFileDescription'
 import bind from 'bind-decorator'
 import withRunning, { startRunningGuard, stopRunningGuard, onlyRunning } from './misc/withRunning'
-import CsvFile from './file/CsvFile';
-import withChanged, { andChanged } from './misc/withChanged';
+import withChanged, { andChanged } from './misc/withChanged'
 
 const ALLOC_FILE = 'allocation.json'
 const DEFAULT_MAX_LINES = 1000
@@ -30,7 +29,7 @@ class Allocator {
   private allocFile: JsonFile
   private savingTimer: NodeJS.Timer | null
 
-  constructor ({dir, maxLines = DEFAULT_MAX_LINES}: AllocatorSetting) {
+  constructor ({ dir, maxLines = DEFAULT_MAX_LINES }: AllocatorSetting) {
     this.dir = dir
     this.maxLines = maxLines
     this.allocFile = new JsonFile(join(dir, ALLOC_FILE))
@@ -53,7 +52,7 @@ class Allocator {
 
   @stopRunningGuard
   async stop () {
-    clearInterval(this.savingTimer)
+    clearInterval(this.savingTimer as NodeJS.Timer)
     process.removeListener('exit', this.onExit)
     await this.allocFile.save(this.descriptions)
   }
@@ -80,7 +79,7 @@ class Allocator {
       }
     }
 
-    return {...description}
+    return { ...description }
   }
 
   // --- descriptions の操作
@@ -132,7 +131,7 @@ class Allocator {
   // --- Private
 
   private findNewIndex (description: CsvFileDescription) {
-    const {descriptions} = this
+    const { descriptions } = this
     if (descriptions.length === 0) {
       return 0
     }
@@ -147,7 +146,7 @@ class Allocator {
   private findMinIndexLowerBoundGreaterThan (value: number): number {
     // TODO Improve algorithm
     return this.descriptions.findIndex(
-      (d) => d.lowerBound > value
+      (d) => d.lowerBound > value,
     )
   }
 
